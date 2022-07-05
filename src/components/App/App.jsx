@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
+import { ToastContainer, toast } from 'react-toastify';
 import { Wrapper, Container } from './App.styled';
 
 import ContactForm from 'components/ContactForm';
@@ -32,7 +33,8 @@ function App() {
     );
 
     if (isNameInContacts) {
-      alert(`${name} is already in contacts`);
+      toast.warn(`"${name}" is already in contacts`);
+      // alert(`${name} is already in contacts`);
     } else {
       setContacts(contacts => [
         ...contacts,
@@ -82,6 +84,7 @@ function App() {
           />
         )}
       </Container>
+      <ToastContainer />
     </Wrapper>
   );
 }
