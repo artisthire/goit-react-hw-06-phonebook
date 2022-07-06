@@ -1,17 +1,12 @@
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { List } from './ContactList.styled';
 import ContactListItem from 'components/ContactList/ContactListItem';
-
-function ContactList({ contacts, onContactRemove }) {
+function ContactList({ contacts }) {
   return (
     <List>
-      {contacts.map(({ id, name, number }) => (
-        <ContactListItem
-          key={id}
-          name={name}
-          number={number}
-          onContactRemove={onContactRemove(id)}
-        />
+      {contacts.map(contact => (
+        <ContactListItem key={contact.id} contact={contact} />
       ))}
     </List>
   );
@@ -25,7 +20,20 @@ ContactList.propTypes = {
       number: PropTypes.string.isRequired,
     })
   ).isRequired,
-  onContactRemove: PropTypes.func.isRequired,
 };
 
-export default ContactList;
+function getVisibleContacts(contacts, filter) {
+  const normalizedFilter = filter.toLowerCase();
+
+  const visibleContacts = contacts.filter(({ name }) =>
+    name.toLowerCase().includes(normalizedFilter)
+  );
+
+  return visibleContacts;
+}
+
+const mapStateToProps = ({ items, filter }) => ({
+  contacts: getVisibleContacts(items, filter),
+});
+
+export default connect(mapStateToProps)(ContactList);

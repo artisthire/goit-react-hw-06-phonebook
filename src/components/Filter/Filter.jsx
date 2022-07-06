@@ -1,4 +1,6 @@
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import * as actions from 'redux/contact/contact-actions';
 import { Label, LabelName, Input } from './Filter.styled';
 
 function Filter({ filterValue, onFilterChange }) {
@@ -6,8 +8,9 @@ function Filter({ filterValue, onFilterChange }) {
     <Label>
       <LabelName>Find contact by name</LabelName>
       <Input
-        type="text"
+        type="search"
         name="filter"
+        autoComplete="off"
         value={filterValue}
         onChange={onFilterChange}
       />
@@ -20,4 +23,13 @@ Filter.propTypes = {
   onFilterChange: PropTypes.func.isRequired,
 };
 
-export default Filter;
+const mapStateToProps = ({ filter }) => ({
+  filterValue: filter,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onFilterChange: ({ currentTarget }) =>
+    dispatch(actions.changeFilter(currentTarget.value)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Filter);

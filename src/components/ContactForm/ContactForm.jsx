@@ -1,21 +1,33 @@
-import { useReducer } from 'react';
+import { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
+import * as actions from 'redux/contact/contact-actions';
 import { Form, Label, LabelName, Input, Button } from './ContactForm.styled';
 
-function ContactForm({ onContactAdd }) {
-  const [state, dispatch] = useReducer(reducer, {}, init);
-
-  function handleChange({ target }) {
-    const { name: type, value: payload } = target;
-
-    dispatch({ type, payload });
-  }
+function ContactForm({ contacts, onContactAdd }) {
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
   function handleSubmit(evt) {
     evt.preventDefault();
 
-    onContactAdd({ name: state.name, number: state.number });
-    dispatch({ type: 'reset' });
+    const form = evt.currentTarget;
+    const nameValue = form.name.value.trim();
+    const telValue = form.number.value.trim();
+    const normalizeName = nameValue.toLocaleLowerCase();
+    const isNameInContacts = contacts.some(
+      contact => contact.name.toLocaleLowerCase() === normalizeName
+    );
+
+    if (isNameInContacts) {
+      toast.warn(`"${nameValue}" is already in contacts`);
+    } else {
+      onContactAdd({ name: nameValue, number: telValue });
+    }
+
+    form.reset();
   }
 
   return (
@@ -27,9 +39,8 @@ function ContactForm({ onContactAdd }) {
           name="name"
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+          defaultValue=""
           required
-          value={state.name}
-          onChange={handleChange}
         />
       </Label>
       <Label>
@@ -39,9 +50,8 @@ function ContactForm({ onContactAdd }) {
           name="number"
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+          defaultValue=""
           required
-          value={state.number}
-          onChange={handleChange}
         />
       </Label>
       <Button type="submit">Add contact</Button>
@@ -53,16 +63,15 @@ ContactForm.propTypes = {
   onContactAdd: PropTypes.func.isRequired,
 };
 
-function init() {
-  return { name: '', number: '' };
-}
+const mapStateToProps = ({ items }) => ({
+  contacts: items,
+});
 
-function reducer(state, action) {
-  if (action.type === 'reset') {
-    return init();
-  }
+const mapDispatchToProps = dispatch => ({
+  onContactAdd: contact => {
+    dispatch(actions.addContact(contact));
+    dispatch(actions.changeFilter(''));
+  },
+});
 
-  return { ...state, [action.type]: action.payload };
-}
-
-export default ContactForm;
+export default connect(mapStateToProps, mapDispatchToProps)(ContactForm);
