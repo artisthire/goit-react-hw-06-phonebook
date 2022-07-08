@@ -1,16 +1,20 @@
-import { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import PropTypes from 'prop-types';
-import * as actions from 'redux/contact/contact-actions';
+import { getContacts } from 'redux/contact/contact-selectors';
+import { changeFilter, addContact } from 'redux/contact/contact-actions';
 import { Form, Label, LabelName, Input, Button } from './ContactForm.styled';
 
-function ContactForm({ contacts, onContactAdd }) {
+function ContactForm({ onContactAdd }) {
+  const toastId = useRef(null);
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
+
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
-  function handleSubmit(evt) {
+  const handleSubmit = evt => {
     evt.preventDefault();
 
     const form = evt.currentTarget;
@@ -22,16 +26,19 @@ function ContactForm({ contacts, onContactAdd }) {
     );
 
     if (isNameInContacts) {
-      toast.warn(`"${nameValue}" is already in contacts`);
+      toastId.current = toast.warn(`"${nameValue}" is already in contacts`);
     } else {
-      onContactAdd({ name: nameValue, number: telValue });
+      dispatch(addContact({ name: nameValue, number: telValue }));
+      dispatch(changeFilter(''));
     }
 
     form.reset();
-  }
+  };
+
+  const toastDismiss = () => toast.dismiss(toastId.current);
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} onClick={toastDismiss}>
       <Label>
         <LabelName>Name</LabelName>
         <Input
@@ -59,19 +66,4 @@ function ContactForm({ contacts, onContactAdd }) {
   );
 }
 
-ContactForm.propTypes = {
-  onContactAdd: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = ({ items }) => ({
-  contacts: items,
-});
-
-const mapDispatchToProps = dispatch => ({
-  onContactAdd: contact => {
-    dispatch(actions.addContact(contact));
-    dispatch(actions.changeFilter(''));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ContactForm);
+export default ContactForm;

@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
+import { createReducer } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
-import * as actionTypes from 'redux/contact/contact-action-types';
+import * as actions from 'redux/contact/contact-actions';
 
 const INITIAL_CONTACTS = [
   { id: nanoid(6), name: 'Rosie Simpson', number: '459-12-56' },
@@ -12,25 +13,22 @@ const INITIAL_CONTACTS = [
 const contactsInitialState =
   JSON.parse(localStorage.getItem('contacts')) ?? INITIAL_CONTACTS;
 
-const contactsReducer = (state = contactsInitialState, { type, payload }) => {
-  switch (type) {
-    case actionTypes.ADD:
-      return [...state, payload];
-    case actionTypes.REMOVE:
-      return state.filter(({ id }) => id !== payload);
-    default:
-      return state;
-  }
-};
+const contactsReducer = createReducer(contactsInitialState, builder => {
+  builder
+    .addCase(actions.addContact, (state, { payload }) => {
+      state.push(payload);
+    })
+    .addCase(actions.removeContact, (state, { payload }) => {
+      const removeItemIndex = state.findIndex(
+        contact => contact.id === payload
+      );
+      state.splice(removeItemIndex, 1);
+    });
+});
 
-const filterReducer = (state = '', { type, payload }) => {
-  switch (type) {
-    case actionTypes.CHANGE_FILTER:
-      return payload;
-    default:
-      return state;
-  }
-};
+const filterReducer = createReducer('', builder => {
+  builder.addCase(actions.changeFilter, (_, { payload }) => payload);
+});
 
 export default combineReducers({
   items: contactsReducer,
