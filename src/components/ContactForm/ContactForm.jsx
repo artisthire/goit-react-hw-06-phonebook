@@ -1,21 +1,20 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getContacts } from 'redux/contact/contact-selectors';
 import { changeFilter, addContact } from 'redux/contact/contact-actions';
 import { Form, Label, LabelName, Input, Button } from './ContactForm.styled';
 
-function ContactForm({ onContactAdd }) {
+function ContactForm() {
   const toastId = useRef(null);
   const contacts = useSelector(getContacts);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+  const toastDismiss = () => toast.dismiss(toastId.current);
 
   const handleSubmit = evt => {
     evt.preventDefault();
+    toastDismiss();
 
     const form = evt.currentTarget;
     const nameValue = form.name.value.trim();
@@ -34,8 +33,6 @@ function ContactForm({ onContactAdd }) {
 
     form.reset();
   };
-
-  const toastDismiss = () => toast.dismiss(toastId.current);
 
   return (
     <Form onSubmit={handleSubmit} onClick={toastDismiss}>

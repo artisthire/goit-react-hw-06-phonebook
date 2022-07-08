@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
-import { createReducer } from '@reduxjs/toolkit';
-import { combineReducers } from 'redux';
+import { createReducer, combineReducers } from '@reduxjs/toolkit';
+import { persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 import * as actions from 'redux/contact/contact-actions';
 
 const INITIAL_CONTACTS = [
@@ -10,10 +11,7 @@ const INITIAL_CONTACTS = [
   { id: nanoid(6), name: 'Annie Copeland', number: '227-91-26' },
 ];
 
-const contactsInitialState =
-  JSON.parse(localStorage.getItem('contacts')) ?? INITIAL_CONTACTS;
-
-const contactsReducer = createReducer(contactsInitialState, builder => {
+const contactsReducer = createReducer(INITIAL_CONTACTS, builder => {
   builder
     .addCase(actions.addContact, (state, { payload }) => {
       state.push(payload);
@@ -30,7 +28,18 @@ const filterReducer = createReducer('', builder => {
   builder.addCase(actions.changeFilter, (_, { payload }) => payload);
 });
 
-export default combineReducers({
+const contactReducer = combineReducers({
   items: contactsReducer,
   filter: filterReducer,
 });
+
+const persistConfig = {
+  key: 'contacts',
+  version: 1,
+  storage,
+  blacklist: ['filter'],
+};
+
+const persistedContactReducer = persistReducer(persistConfig, contactReducer);
+
+export default persistedContactReducer;

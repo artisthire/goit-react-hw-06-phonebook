@@ -1,4 +1,3 @@
-import { ToastContainer } from 'react-toastify';
 import { Wrapper, Container } from './App.styled';
 import ContactForm from 'components/ContactForm';
 import ContactList from 'components/ContactList';
@@ -13,9 +12,9 @@ function App() {
 
         <h2>Contacts</h2>
         <Filter />
+
         <ContactList />
       </Container>
-      <ToastContainer />
     </Wrapper>
   );
 }
