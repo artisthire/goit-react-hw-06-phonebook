@@ -9,7 +9,7 @@ import {
   REGISTER,
 } from 'redux-persist';
 
-import persistedContactReducer from 'redux/contact/contact-reducer';
+import persistedContactReducer from 'redux/contacts/contacts-reducers';
 
 const rootReducer = combineReducers({ contacts: persistedContactReducer });
 
@@ -21,6 +21,7 @@ const store = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }),
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 const persistor = persistStore(store);

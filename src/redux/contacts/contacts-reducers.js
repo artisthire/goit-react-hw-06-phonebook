@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 import { createReducer, combineReducers } from '@reduxjs/toolkit';
 import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import * as actions from 'redux/contact/contact-actions';
+import * as actions from 'redux/contacts/contacts-actions';
 
 const INITIAL_CONTACTS = [
   { id: nanoid(6), name: 'Rosie Simpson', number: '459-12-56' },

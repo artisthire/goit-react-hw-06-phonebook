@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { changeFilter } from 'redux/contact/contact-actions';
-import { getFilterValue } from 'redux/contact/contact-selectors';
+import { changeFilter } from 'redux/contacts/contacts-actions';
+import { getFilterValue } from 'redux/contacts/contacts-selectors';
 import { Label, LabelName, Input } from './Filter.styled';
 
 function Filter() {

@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import * as actions from 'redux/contact/contact-actions';
+import * as actions from 'redux/contacts/contacts-actions';
 import PropTypes from 'prop-types';
 import { Item, Number, Button } from './ContactListItem.styled';
 
